@@ -1,20 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 const long long int INF = 1e17;
 const long long int NINF = INF * (-1);
- 
+
 struct triplet
 {
     long long int first;
     long long int second;
     long long int third;
 };
- 
+
 long long int n, m;
 vector<triplet> edges;
 vector<long long int> dist;
- 
+
 void bellman_ford()
 {
     for (long long int i = 1; i < n; ++i)
@@ -30,7 +30,7 @@ void bellman_ford()
             dist[v] = max(dist[v], NINF);
         }
     } // n relaxations
- 
+
     for (long long int i = 1; i < n; ++i)
     {
         for (auto e : edges)
@@ -48,7 +48,7 @@ void bellman_ford()
         }
     }
 }
- 
+
 int main()
 {
     cin >> n >> m;
@@ -74,29 +74,21 @@ int main()
     }
     else
     {
- 
+
         for (long long int i = 2; i <= n; ++i)
         {
             dist[i] = INF;
         }
- 
+
         bellman_ford();
         if (dist[n] == NINF)
         {
-            if (n == 1)
-            {
-                cout << -1;
-            }
- 
             cout << -1 << endl;
             return 0;
-        }
-        if (n == 1)
-        {
-            cout << -1;
         }
         else
         {
             cout << dist[n] * (-1) << endl;
         }
     }
+}
