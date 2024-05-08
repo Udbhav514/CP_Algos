@@ -1,105 +1,88 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-const int MAX_N = 200001;
-const int LOG = 18;
-
-vector<int> adj[MAX_N];
-int par[MAX_N][LOG + 1];
-int level[MAX_N];
+vector<vector<int>> par(200005, vector<int>(25, -1));
+vector<vector<int>> adj;
 int n, q;
-
-void dfs(int node, int parent)
+vector<int> level(200002, -1);
+void dfs(int node, int par)
 {
-    level[node] = level[parent] + 1;
-    par[node][0] = parent;
-    for (int neighbor : adj[node])
+    level[node] = 1 + level[par];
+    for (auto u : adj[node])
     {
-        if (neighbor != parent)
+        if (u != par)
         {
-            dfs(neighbor, node);
+            dfs(u, node);
         }
     }
 }
-
 void buildTable()
 {
-    for (int j = 1; j <= LOG; j++)
+    for (int j = 1; j < 25; j++)
     {
         for (int i = 1; i <= n; i++)
         {
-            if (par[i][j - 1] != -1)
+            int between = par[i][j - 1];
+            if (between != -1)
             {
-                par[i][j] = par[par[i][j - 1]][j - 1];
+                par[i][j] = par[between][j - 1];
             }
         }
     }
 }
-
 int parent(int x, int k)
 {
-    for (int i = 0; i <= LOG; i++)
+    for (int i = 0; i < 25; i++)
     {
-        if (k & (1 << i))
+        if ((k & (1 << i)) && x != -1)
         {
             x = par[x][i];
         }
     }
     return x;
 }
-
-int lca(int a, int b)
-{
-    if (level[a] < level[b])
-    {
-        swap(a, b);
-    }
-    a = parent(a, level[a] - level[b]);
-    if (a == b)
-    {
-        return a;
-    }
-
-    int lo = 0, hi = level[a], ans = -1;
-    while (lo <= hi)
-    {
-        int mid = (lo + hi) / 2;
-        if (parent(a, mid) == parent(b, mid))
-        {
-            ans = parent(a, mid);
-            hi = mid - 1;
-        }
-        else
-        {
-            lo = mid + 1;
-        }
-    }
-    return ans;
-}
-
 int main()
 {
     cin >> n >> q;
-    adj[1].push_back(0);
-    for (int i = 2; i <= n; i++)
+    adj.resize(n + 2);
+    for (int i = 0; i < n - 1; i++)
     {
-        int p;
-        cin >> p;
-        par[i][0] = p;
-        adj[i].push_back(p);
-        adj[p].push_back(i);
+        cin >> par[i + 2][0];
+        adj[i + 2].push_back(par[i + 2][0]);
+        adj[par[i + 2][0]].push_back(i + 2);
     }
 
-    memset(par, -1, sizeof par);
-    level[0] = -1;
-    dfs(1, 0);
     buildTable();
-
-    while (q--)
+    dfs(1, 0);
+    // cout << q << endl;
+    for (int i = 0; i < q; i++)
     {
         int a, b;
         cin >> a >> b;
-        cout << lca(a, b) << '\n';
+        if (level[a] > level[b])
+        {
+            a = parent(a, level[a] - level[b]);
+        }
+        if (level[b] > level[a])
+        {
+            b = parent(b, level[b] - level[a]);
+        }
+        if (a == b)
+        {
+            cout << a << endl;
+        }
+        else
+        {
+            // we will find the imediate child of LCA
+            for (int i = 24; i >= 0; i--)
+            {
+                if (par[a][i] != par[b][i])
+                {
+                    a = par[a][i];
+                    b = par[b][i];
+                }
+            }
+            cout << par[a][0] << endl;
+        }
     }
 
     return 0;
