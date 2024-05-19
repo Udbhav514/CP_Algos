@@ -10,7 +10,7 @@ long long int right(long long int index)
 }
 long long int merge(long long int left, long long int right)
 {
-    return right + left;
+    return min(right, left);
 }
 void build(long long int start, long long int end, long long int index, vector<long long int> &SGT, vector<long long int> &arr)
 {
@@ -43,6 +43,10 @@ void update(long long int start, long long int end, long long int index, vector<
     }
     SGT[index] = merge(SGT[left(index)], SGT[right(index)]);
 }
+long long int default_value()
+{
+    return 1e18;
+}
 long long int query(long long int start, long long int end, long long int index, vector<long long int> &SGT, long long int l, long long int r)
 {
     // complete
@@ -56,7 +60,7 @@ long long int query(long long int start, long long int end, long long int index,
     // l..r...start..end
     if (r < start || l > end)
     {
-        return 0;
+        return default_value();
     }
     // else partial
     long long int mid = (start + end) / 2;
