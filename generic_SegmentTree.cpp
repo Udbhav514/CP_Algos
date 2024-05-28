@@ -114,6 +114,10 @@ struct Update1
 
 int main()
 {
+    int n;
+    cin >> n;
+    vector<ll> arr;
+    SegTree<Node1, Update1> sgt = SegTree<Node1, Update1>(n, arr);
 
     return 0;
 }
